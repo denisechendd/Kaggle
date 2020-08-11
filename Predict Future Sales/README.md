@@ -54,6 +54,17 @@ The final rmse metric is 1.08. I ranked top 56% out of 8,766 competitors.
   - input feature shape (1019418, 1, 21)
     - (# num of samples, # num of time steps, # num of features)
 
+  - modelling  <br>
+    <img src="image/LSTM1.png" width="80%" height="80%"> <br>
+    <img src="image/LSTM2.png" width="80%" height="80%"> <br>
+
+    LSTM solves **Vanishing Gradient Problem**, which shows that gradient shrink exponentially and have small values near 0. LSTM both have a gating mechanism to regulate the flow of information like remembering the context over multiple time steps. There are **Input gate**, **Forget Gate**, and **Output Gate**
+    - Input gate: update the cell state. When it's 0, it would not update the cell state. When it's 1, it would update the cell, meaning data is important.
+    - Forget Gate: Keep or drop information from the previous hidden state. When it's open (1), it keeps the previous dataset. On the other hand, when it's close, it updates the new data and drop the past data.
+    - Output Gate: The output gate decides what the next hidden state should be. Hidden state contains information on previous inputs and is used for prediction.
+
+    First, we pass the previous hidden state and the current input into a sigmoid function. Then we pass the newly modified cell state to the tanh function. We multiply the tanh output with the sigmoid output to decide what information the hidden state should carry. The output is the hidden state.
+
   - Final output
     - Training mse: 0.0237
     - Training mae: 0.0562
