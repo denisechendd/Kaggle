@@ -40,3 +40,22 @@ The final rmse metric is 1.08. I ranked top 56% out of 8,766 competitors.
     - Take 25% high (shop,item) tuple with item_cnt_month, (median of last 4 or 5 month in last year), replace the pred value with the median and clip (0,20)
     - take the median value of all shop and items from first to last year, get all (items, shop) for median with 0, replace their value with 0 &
     - take the tuple not appear in train set but in test set, replace the pred val with 0
+
+#### multivariate_LSTM
+  - Data Preprocessing
+    - fill the (shop, item) tuple set with 0 during training period when there are no sales_train
+    - fill the (shop, item) tuple set with 0 during validatoin period when there are no sales_train
+  - Features
+    - item average price, shop_item_sum on monthly and yearly basis, items sold count on monthly basis, total items sold sold on monthly basis,
+    - **time lag features:**
+      - sum up shop total items sold every month on previous 1, 2, 3 ,and 6 months
+      - sum up item total sold count every month on previous 1, 2, 3 ,and 6 months
+  - ttl training feature shape: (1175113, 22)
+  - input feature shape (1019418, 1, 21)
+    - (# num of samples, # num of time steps, # num of features)
+
+  - Final output
+    - Training mse: 0.0237
+    - Training mae: 0.0562
+    - Validation mse: 0.0410
+    - Validation mae: 0.0281
