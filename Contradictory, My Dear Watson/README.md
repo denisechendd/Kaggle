@@ -7,8 +7,9 @@ The task is to conduct the classification prediction to match the given class of
 There are fifteen different languages appearing in the premise-hypothesis dataset, such as Arabic, Bulgarian, Chinese, German, Greek, English, Spanish, French, Hindi, Russian, Swahili, Thai, Turkish, Urdu, and Vietnamese.
 In the Dataset, given the premise **He came, he opened the door and I remember looking back and seeing the expression on his face, and I could tell that he was disappointed.**, there would be different hypothesis matched with the premise. <br>
 **Hypothesis 1:** <br>
-- Just by the look on his face when he came through the door I just knew that he was let down.<br>
-The hypothesis is truely matched with the premise. Then, the sentence is seen as entailment. <br>
+- Just by the look on his face when he came through the door I just knew that he was let down. <br>
+The hypothesis is truely matched with the premise. Then, the sentence is seen as entailment.
+
 **Hypothesis 2:** <br>
 - He was trying not to make us feel guilty but we knew we had caused him trouble.<br>
 The hypothesis is somewhat true, but we can confirm the information given the premise. Therefore, this hypothesis is considered neutral.
@@ -45,13 +46,15 @@ The final accuracy metric is 0.68. I ranked top 44% out of 89 competitors.
   b: the proportion to be kept as it it. <br>
   c: the proportion to be replaced by a random token in the tokenizer's vocabulary. <br>
   **The loss function is calculated by the sparse categorical cross entropy.**
-    - mask_type_probs=(0.8, 0.1, 0.1) <br>
+    - mask_type_probs=(0.8, 0.1, 0.1)
+
     Epochs | Train Loss | Valid Loss
     --- | --- | ---
     1 | 1.098 | 1.09
     2 | 1.13 | 1.084
     3 | 1.107 | 1.091
-    - mask_type_probs=(0.3, 0.6, 0.1) <br>
+    - mask_type_probs=(0.3, 0.6, 0.1)
+    
     Epochs | Train Loss | Valid Loss
     --- | --- | ---
     1 | 1.115 | 1.072
