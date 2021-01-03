@@ -43,9 +43,12 @@ The final accuracy metric is 0.68. I ranked top 44% out of 89 competitors.
   - Parameter Tuning Approach <br>
   The `mask_type_probs` parameter is tweaked through the parameter tuning. The `mask_type_probs` parameter is set with the tuple (a, b, c).<br>
   a: the proportion to be replaced by the mask token. <br>
-  b: the proportion to be kept as it it. <br>
+  b: the proportion to be kept as it is. <br>
   c: the proportion to be replaced by a random token in the tokenizer's vocabulary. <br>
-  **The loss function is calculated by the sparse categorical cross entropy.**
+  **The loss function is calculated by the sparse categorical cross entropy.** <br>
+  In the mask_type_probs=(0.8, 0.1, 0.1), the train and validation loss is around 1.1. On the other hand, regarding the mask_type_probs=(0.3, 0.6, 0.1), 
+  the train loss is around 1.1, and the validation loss is around 1.05. The model with the mask_type_probs=(0.8, 0.1, 0.1) is overfitting. When the proportion
+  to be replaced by the mask token is higher, the model performance is much better.
     - mask_type_probs=(0.8, 0.1, 0.1)
 
     Epochs | Train Loss | Valid Loss
@@ -54,9 +57,12 @@ The final accuracy metric is 0.68. I ranked top 44% out of 89 competitors.
     2 | 1.13 | 1.084
     3 | 1.107 | 1.091
     - mask_type_probs=(0.3, 0.6, 0.1)
-    
+
     Epochs | Train Loss | Valid Loss
     --- | --- | ---
     1 | 1.115 | 1.072
     2 | 1.104 | 1.041
     3 | 1.113 | 1.06
+
+## Challenge
+- It takes around 20 minutes to run through each epoch with GPU. The fine tune process of xlm-roberta-base model requires high computation resource.
