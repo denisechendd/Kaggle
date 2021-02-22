@@ -13,50 +13,54 @@ The data contains 21,367 labeled images as the train dataset from the survey col
 The final accuracy metric is 0.903 on test dataset. I ranked top 5% out of 3947 competitors, and achieved the silver medal.
 ## Approach
 
-### modelling
-#### Transformer XLMRoberta
-  - Data Preprocessing (Data Batches)
-    - tokenize the tuple input of the premise and hypothesis
-    - Pad the tokens with length of 80
-    - xlm-roberta token masking: tokens with higher counts will be masked based on the probability
-    - words would be masked with 3 conditions regarding keeping the original words, being masked, and random masked words replacement
+### Model Training Pipeline
+  - Image Preprocessing
+    - crop, transpose, flip, and rotate images
+    - Load data into batches
   - Dataset:
-    - Train data: 70% original dataset
-    - Validation data: 30% original dataset
-    - Test data
+    - Train data: 80% original dataset
+    - Validation data: 20% original dataset
 
-  - Model (xlm Roberta base)
-    - Predict the tokens to be masked, and calculate the loss of the masked tokens
-    - Predict the labels from train, test, validation set. Run through the fine tune process after 3 epochs.
-  - Parameter Tuning Approach <br>
-  The `mask_type_probs` parameter is tweaked through the parameter tuning. The `mask_type_probs` parameter is set with the tuple (a, b, c).<br>
-  a: the proportion to be replaced by the mask token. <br>
-  b: the proportion to be kept as it is. <br>
-  c: the proportion to be replaced by a random token in the tokenizer's vocabulary. <br>
-  **The loss function is calculated by the sparse categorical cross entropy.** <br>
-  In the mask_type_probs=(0.8, 0.1, 0.1), the train and validation loss is around 1.1. On the other hand, regarding the mask_type_probs=(0.3, 0.6, 0.1),
-  the train loss is around 1.1, and the validation loss is around 1.05. The model with the mask_type_probs=(0.8, 0.1, 0.1) is overfitting. When the proportion
-  to be replaced by the mask token is higher, the model performance is much better.
-    - mask_type_probs=(0.8, 0.1, 0.1)
+  - Model (**tf_efficientnet_b4_ns, resnext50_32x4d, VisionTransformer**)
+    - Train the model in the 2-fold training dataset, and calculate the training loss and validation accuracy
+    - Loss is calculated in CrossEntropyLoss.
+    - Apply label smoothing as a regularization approach to minimize the gap of the largest logit with the rest
+    - Save the trained model over each epoch
 
-    Epochs | Train Loss | Valid Loss
-    --- | --- | ---
-    1 | 1.098 | 1.09
-    2 | 1.13 | 1.084
-    3 | 1.107 | 1.091
-    - mask_type_probs=(0.3, 0.6, 0.1)
+#### resnext50_32x4d model training performance over 1 fold
+    Epochs | Train Loss | Valid Loss | Valid Accuracy
+    --- | --- | --- | ---
+    1 | 0.488 | 0.426 | 0.858
+    2 | 0.482 | 0.417 | 0.864
+    3 | 0.421 | 0.4 | 0.874
+    4 | 0.43 | 0.361 | 0.884
+    5 | 0.362 | 0.359 | 0.883
+    6 | 0.37 | 0.357 | 0.887
+    7 | 0.332 | 0.355 | 0.89
+    8 | 0.333 | 0.346 | 0.889
+    9 | 0.297 | 0.347 | 0.889
+    10 | 0.3 | 0.344 | 0.892
 
-    Epochs | Train Loss | Valid Loss
-    --- | --- | ---
-    1 | 1.115 | 1.072
-    2 | 1.104 | 1.041
-    3 | 1.113 | 1.06
+
+#### tf_efficientnet_b4_ns model training performance over 1 fold
+    Epochs | Train Loss | Valid Loss | Valid Accuracy
+    --- | --- | --- | ---
+    1 | 0.436 | 0.364 | 0.877
+    2 | 0.414 | 0.338 | 0.882
+    3 | 0.389 | 0.339 | 0.883
+    4 | 0.359 | 0.323 | 0.888
+    5 | 0.32 | 0.33 | 0.885
+    6 | 0.314 | 0.349 | 0.879
+    7 | 0.284 | 0.337 | 0.886
+    8 | 0.288 | 0.334 | 0.886
+    9 | 0.269 | 0.334 | 0.889
+    10 | 0.284 | 0.339 | 0.886
 
 ### Inference
 #### Methods
 - Perform 2 fold validation on train dataset.
-- Ensemble three models with VisionTransformer, tf_efficientnet_b4_ns, and resnext50_32x4d.
-- Apply weights to the respective models' predictions, and TTA of 3 to the predicted data in batches. **Test Time Augmentation (TTA) is the improved method for model predictions on test dataset. Instead of predicting the output from the actual image, TTA is to take the augmented images several times, and compute the average of the probability from the output of each image.**
+- Ensemble three pretrained-models with VisionTransformer, tf_efficientnet_b4_ns, and resnext50_32x4d.
+- Apply weights to the respective models' predictions, and TTA of 3 to the predicted data in batches. **Test Time Augmentation (TTA) is the improved method for model predictions on test dataset. Instead of predicting the output from the actual image, TTA is the method to predict the augmented images several times, and computes the average of the probability from each image output.**
 - Compute the mean of the predicted value from each fold.
 
 Methods | Models | Loss function | Loss Value | TTA | Accuracy on Validation set | Accuracy on Test set
@@ -68,4 +72,9 @@ Methods | Models | Loss function | Loss Value | TTA | Accuracy on Validation set
 5 | 4 * efficient net + 2 * resnext50_32x4d + 1*VisionTransformer | Log loss | 0.255 | 4 | 0.927 | 0.903
 
 ## Challenge
-- It takes around 20 minutes to run through each epoch with GPU. The fine tune process of xlm-roberta-base model requires high computation resource.
+- The test accuracy is not improved from 0.898 after changing the loss function or concatenating more trained models from different epochs
+- The model is required with high computation resource such as GPU or TPU and it takes around 4.5 hours to train the model over 10 epochs on 2 fold train data.
+
+## feedback
+- Model Ensembling from different deep learning models would improve the test accuracy from 0.898 to 0.903
+- Apply Test Time Augmentation (TTA) to model training on augmented dataset would regularize the model performance
