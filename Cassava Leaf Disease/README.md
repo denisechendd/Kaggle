@@ -28,6 +28,7 @@ The final accuracy metric is 0.903 on test dataset. I ranked top 5% out of 3947 
     - Save the trained model over each epoch
 
 #### resnext50_32x4d model training performance over 1 fold
+
     Epochs | Train Loss | Valid Loss | Valid Accuracy
     --- | --- | --- | ---
     1 | 0.488 | 0.426 | 0.858
@@ -43,6 +44,7 @@ The final accuracy metric is 0.903 on test dataset. I ranked top 5% out of 3947 
 
 
 #### tf_efficientnet_b4_ns model training performance over 1 fold
+
     Epochs | Train Loss | Valid Loss | Valid Accuracy
     --- | --- | --- | ---
     1 | 0.436 | 0.364 | 0.877
@@ -75,6 +77,6 @@ Methods | Models | Loss function | Loss Value | TTA | Accuracy on Validation set
 - The test accuracy is not improved from 0.898 after changing the loss function or concatenating more trained models from different epochs
 - The model is required with high computation resource such as GPU or TPU and it takes around 4.5 hours to train the model over 10 epochs on 2 fold train data.
 
-## feedback
+## Feedback
 - Model Ensembling from different deep learning models would improve the test accuracy from 0.898 to 0.903
 - Apply Test Time Augmentation (TTA) to model training on augmented dataset would regularize the model performance
